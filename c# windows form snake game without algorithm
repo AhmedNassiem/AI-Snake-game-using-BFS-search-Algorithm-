@@ -1,0 +1,406 @@
+namespace Snake_Game
+{
+    class circle
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public circle()
+        {
+            X = 0;
+            Y = 0;
+        }
+    }
+
+
+partial class Form1
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.components = new System.ComponentModel.Container();
+            this.startbutton = new System.Windows.Forms.Button();
+            this.snapbutton = new System.Windows.Forms.Button();
+            this.piccanvas = new System.Windows.Forms.PictureBox();
+            this.txtscore = new System.Windows.Forms.Label();
+            this.txthighscore = new System.Windows.Forms.Label();
+            this.GameTimer = new System.Windows.Forms.Timer(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.piccanvas)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // startbutton
+            // 
+            this.startbutton.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.startbutton.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.startbutton.Location = new System.Drawing.Point(607, 12);
+            this.startbutton.Name = "startbutton";
+            this.startbutton.Size = new System.Drawing.Size(115, 75);
+            this.startbutton.TabIndex = 0;
+            this.startbutton.Text = "Start";
+            this.startbutton.UseVisualStyleBackColor = false;
+            this.startbutton.Click += new System.EventHandler(this.startgame);
+            // 
+            // snapbutton
+            // 
+            this.snapbutton.BackColor = System.Drawing.Color.Red;
+            this.snapbutton.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.snapbutton.Location = new System.Drawing.Point(605, 93);
+            this.snapbutton.Name = "snapbutton";
+            this.snapbutton.Size = new System.Drawing.Size(117, 71);
+            this.snapbutton.TabIndex = 1;
+            this.snapbutton.Text = "Snap";
+            this.snapbutton.UseVisualStyleBackColor = false;
+            this.snapbutton.Click += new System.EventHandler(this.takesnapshot);
+            // 
+            // piccanvas
+            // 
+            this.piccanvas.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.piccanvas.Location = new System.Drawing.Point(12, 12);
+            this.piccanvas.Name = "piccanvas";
+            this.piccanvas.Size = new System.Drawing.Size(580, 680);
+            this.piccanvas.TabIndex = 2;
+            this.piccanvas.TabStop = false;
+            this.piccanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.updatepictureboxgraphics);
+            // 
+            // txtscore
+            // 
+            this.txtscore.AutoSize = true;
+            this.txtscore.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtscore.Location = new System.Drawing.Point(604, 205);
+            this.txtscore.Name = "txtscore";
+            this.txtscore.Size = new System.Drawing.Size(87, 25);
+            this.txtscore.TabIndex = 3;
+            this.txtscore.Text = "Score 0";
+            // 
+            // txthighscore
+            // 
+            this.txthighscore.AutoSize = true;
+            this.txthighscore.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txthighscore.Location = new System.Drawing.Point(604, 260);
+            this.txthighscore.Name = "txthighscore";
+            this.txthighscore.Size = new System.Drawing.Size(119, 25);
+            this.txthighscore.TabIndex = 3;
+            this.txthighscore.Text = "High Score";
+            // 
+            // GameTimer
+            // 
+            this.GameTimer.Interval = 40;
+            this.GameTimer.Tick += new System.EventHandler(this.gametimerevent);
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(746, 717);
+            this.Controls.Add(this.txthighscore);
+            this.Controls.Add(this.txtscore);
+            this.Controls.Add(this.piccanvas);
+            this.Controls.Add(this.snapbutton);
+            this.Controls.Add(this.startbutton);
+            this.Name = "Form1";
+            this.Text = "Snake Game";
+            this.Click += new System.EventHandler(this.startgame);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.updatepictureboxgraphics);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.keyisdown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.keyisup);
+            ((System.ComponentModel.ISupportInitialize)(this.piccanvas)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Button startbutton;
+        private System.Windows.Forms.Button snapbutton;
+        private System.Windows.Forms.PictureBox piccanvas;
+        private System.Windows.Forms.Label txtscore;
+        private System.Windows.Forms.Label txthighscore;
+        private System.Windows.Forms.Timer GameTimer;
+    }
+    
+    
+     public partial class Form1 : Form
+    {
+
+        private List<circle> Snake = new List<circle>();
+        private circle food = new circle();
+        int maxWidth;
+        int maxHeight;
+        int score;
+        int highScore;
+        Random rand = new Random();
+        bool goLeft, goRight, goDown, goUp;
+        public Form1()
+        {
+            InitializeComponent();
+            new settings();
+        }
+
+        
+
+        private void keyisdown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Left && settings.directions != "right")
+            {
+                goLeft = true;
+            }
+            if (e.KeyCode == Keys.Right && settings.directions != "left")
+            {
+                goRight = true;
+            }
+            if (e.KeyCode == Keys.Up && settings.directions != "down")
+            {
+                goUp = true;
+            }
+            if (e.KeyCode == Keys.Down && settings.directions != "up")
+            {
+                goDown = true;
+            }
+
+        }
+
+        private void keyisup(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Left)
+            {
+                goLeft = false;
+            }
+            if (e.KeyCode == Keys.Right)
+            {
+                goRight = false;
+            }
+            if (e.KeyCode == Keys.Up)
+            {
+                goUp = false;
+            }
+            if (e.KeyCode == Keys.Down)
+            {
+                goDown = false;
+            }
+
+        }
+
+        private void startgame(object sender, EventArgs e)
+        {
+            restartgame();
+        }
+
+        private void takesnapshot(object sender, EventArgs e)
+        {
+            Label caption = new Label();
+            caption.Text = "I scored: " + score + " and my Highscore is " + highScore + " on the Snake Game from MOO ICT";
+            caption.Font = new Font("Ariel", 12, FontStyle.Bold);
+            caption.ForeColor = Color.Purple;
+            caption.AutoSize = false;
+            caption.Width = piccanvas.Width;
+            caption.Height = 30;
+            caption.TextAlign = ContentAlignment.MiddleCenter;
+            piccanvas.Controls.Add(caption);
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.FileName = "Snake Game ";
+            dialog.DefaultExt = "jpg";
+            dialog.Filter = "JPG Image File | *.jpg";
+            dialog.ValidateNames = true;
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                int width = Convert.ToInt32(piccanvas.Width);
+                int height = Convert.ToInt32(piccanvas.Height);
+                Bitmap bmp = new Bitmap(width, height);
+                piccanvas.DrawToBitmap(bmp, new Rectangle(0, 0, width, height));
+                bmp.Save(dialog.FileName, ImageFormat.Jpeg);
+                piccanvas.Controls.Remove(caption);
+            }
+
+
+        }
+
+        private void gametimerevent(object sender, EventArgs e)
+        {
+            if (goLeft)
+            {
+                settings.directions = "left";
+            }
+            if (goRight)
+            {
+                settings.directions = "right";
+            }
+            if (goDown)
+            {
+                settings.directions = "down";
+            }
+            if (goUp)
+            {
+                settings.directions = "up";
+            }
+            // end of directions
+            for (int i = Snake.Count - 1; i >= 0; i--)
+            {
+                if (i == 0)
+                {
+                    switch (settings.directions)
+                    {
+                        case "left":
+                            Snake[i].X--;
+                            break;
+                        case "right":
+                            Snake[i].X++;
+                            break;
+                        case "down":
+                            Snake[i].Y++;
+                            break;
+                        case "up":
+                            Snake[i].Y--;
+                            break;
+                    }
+                    if (Snake[i].X < 0)
+                    {
+                        Snake[i].X = maxWidth;
+                    }
+                    if (Snake[i].X > maxWidth)
+                    {
+                        Snake[i].X = 0;
+                    }
+                    if (Snake[i].Y < 0)
+                    {
+                        Snake[i].Y = maxHeight;
+                    }
+                    if (Snake[i].Y > maxHeight)
+                    {
+                        Snake[i].Y = 0;
+                    }
+                    if (Snake[i].X == food.X && Snake[i].Y == food.Y)
+                    {
+                        eatfood();
+                    }
+                    for (int j = 1; j < Snake.Count; j++)
+                    {
+                        if (Snake[i].X == Snake[j].X && Snake[i].Y == Snake[j].Y)
+                        {
+                            gameover();
+                        }
+                    }
+                }
+                else
+                {
+                    Snake[i].X = Snake[i - 1].X;
+                    Snake[i].Y = Snake[i - 1].Y;
+                }
+            }
+            piccanvas.Invalidate();
+        }
+
+        private void updatepictureboxgraphics(object sender, PaintEventArgs e)
+        {
+            Graphics canvas = e.Graphics;
+            Brush snakeColour;
+            for (int i = 0; i < Snake.Count; i++)
+            {
+                if (i == 0)
+                {
+                    snakeColour = Brushes.Black;
+                }
+                else
+                {
+                    snakeColour = Brushes.DarkGreen;
+                }
+                canvas.FillEllipse(snakeColour, new Rectangle
+                    (
+                    Snake[i].X * settings.Width,
+                    Snake[i].Y * settings.Height,
+                    settings.Width, settings.Height
+                    ));
+            }
+            canvas.FillEllipse(Brushes.DarkRed, new Rectangle
+            (
+            food.X * settings.Width,
+            food.Y * settings.Height,
+            settings.Width, settings.Height
+            ));
+        }
+
+       
+
+        private void restartgame()
+        {
+            maxWidth = piccanvas.Width / settings.Width - 1;
+            maxHeight = piccanvas.Height / settings.Height - 1;
+            Snake.Clear();
+            startbutton.Enabled = false;
+            snapbutton.Enabled = false;
+            score = 0;
+            txtscore.Text = "Score: " + score;
+            circle head = new circle { X = 10, Y = 5 };
+            Snake.Add(head); // adding the head part of the snake to the list
+            for (int i = 0; i < 5; i++)
+            {
+                circle body = new circle();
+                Snake.Add(body);
+            }
+            food = new circle { X = rand.Next(2, maxWidth), Y = rand.Next(2, maxHeight) };
+            GameTimer.Start();
+        }
+
+        private void eatfood()
+        {
+            score += 1;
+            txtscore.Text = "Score: " + score;
+            circle body = new circle
+            {
+                X = Snake[Snake.Count - 1].X,
+                Y = Snake[Snake.Count - 1].Y
+            };
+            Snake.Add(body);
+            food = new circle { X = rand.Next(2, maxWidth), Y = rand.Next(2, maxHeight) };
+        }
+
+        private void gameover()
+        {
+            GameTimer.Stop();
+            startbutton.Enabled = true;
+            snapbutton.Enabled = true;
+            if (score > highScore)
+            {
+                highScore = score;
+                txthighscore.Text = "High Score: " + Environment.NewLine + highScore;
+                txthighscore.ForeColor = Color.Maroon;
+                txthighscore.TextAlign = ContentAlignment.MiddleCenter;
+        }
+        }
+    }
+    
+    class settings
+    {
+        public static int Width { get; set; }
+        public static int Height { get; set; }
+        public static string directions;
+        public settings()
+        {
+            Width = 16;
+            Height = 16;
+            directions = "left";
+        }
+    }
+    }
